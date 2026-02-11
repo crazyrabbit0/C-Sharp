@@ -30,9 +30,12 @@ public class TrayRunner : Form
 
     public TrayRunner(string[] args)
     {
-        this.WindowState = FormWindowState.Minimized;
+        this.WindowState = FormWindowState.Normal;
+        this.FormBorderStyle = FormBorderStyle.None;
         this.ShowInTaskbar = false;
         this.Visible = false;
+        this.Opacity = 0;
+        this.Size = new Size(0, 0);
 
         InitializeApp(args);
     }
