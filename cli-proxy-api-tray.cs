@@ -321,6 +321,18 @@ public class TrayRunner : Form
         base.OnFormClosing(e);
     }
     
+    private const int WS_EX_TOOLWINDOW = 0x80;
+
+    protected override CreateParams CreateParams
+    {
+        get
+        {
+            CreateParams cp = base.CreateParams;
+            cp.ExStyle |= WS_EX_TOOLWINDOW; 
+            return cp;
+        }
+    }
+
     protected override void SetVisibleCore(bool value)
     {
         if (!this.IsHandleCreated)
