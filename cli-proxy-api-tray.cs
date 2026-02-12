@@ -11,6 +11,7 @@ public class TrayRunner : Form
     private NotifyIcon trayIcon;
     private ContextMenuStrip trayMenu;
     private ToolStripMenuItem mgmtItem;
+    private ToolStripMenuItem openFolderItem;
     private ToolStripMenuItem exitItem;
     private Process childProcess;
     private string targetExe;
@@ -113,12 +114,18 @@ public class TrayRunner : Form
         mgmtItem.ImageAlign = ContentAlignment.MiddleCenter;
         mgmtItem.Font = new Font(mgmtItem.Font, FontStyle.Bold);
         
+        openFolderItem = new ToolStripMenuItem("Open Folder", GetFolderIcon(), OnOpenFolder);
+        openFolderItem.Padding = new Padding(12, 0, 12, 0);
+        openFolderItem.TextAlign = ContentAlignment.MiddleLeft;
+        openFolderItem.ImageAlign = ContentAlignment.MiddleCenter;
+
         exitItem = new ToolStripMenuItem("Exit", GetExitIcon(), OnExit);
         exitItem.Padding = new Padding(12, 0, 12, 0);
         exitItem.TextAlign = ContentAlignment.MiddleLeft;
         exitItem.ImageAlign = ContentAlignment.MiddleCenter;
 
         trayMenu.Items.Add(mgmtItem);
+        trayMenu.Items.Add(openFolderItem);
         trayMenu.Items.Add(new ToolStripSeparator());
         trayMenu.Items.Add(exitItem);
 
@@ -150,6 +157,29 @@ public class TrayRunner : Form
                 {
                     g.DrawLine(pen, 4, 4, 12, 12);
                     g.DrawLine(pen, 12, 4, 4, 12);
+                }
+            }
+            return bmp;
+        } catch {
+            return null;
+        }
+    }
+
+    private Image GetFolderIcon()
+    {
+        try {
+            Bitmap bmp = new Bitmap(16, 16);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                using (SolidBrush brush = new SolidBrush(Color.FromArgb(240, 190, 70)))
+                {
+                    g.FillRectangle(brush, 1, 3, 14, 11);
+                    g.FillRectangle(brush, 1, 1, 7, 3);
+                }
+                using (Pen pen = new Pen(Color.FromArgb(180, 130, 20), 1f))
+                {
+                    g.DrawRectangle(pen, 1, 3, 13, 10);
                 }
             }
             return bmp;
@@ -292,6 +322,19 @@ public class TrayRunner : Form
             Process.Start(string.Format("http://localhost:{0}/management.html", port));
         } catch (Exception ex) {
             MessageBox.Show("Failed to open management URL: " + ex.Message);
+        }
+    }
+
+    private void OnOpenFolder(object sender, EventArgs e)
+    {
+        try {
+            if (File.Exists(targetExe)) {
+                Process.Start("explorer.exe", "/select," + targetExe);
+            } else {
+                Process.Start("explorer.exe", AppDomain.CurrentDomain.BaseDirectory);
+            }
+        } catch (Exception ex) {
+            MessageBox.Show("Failed to open folder: " + ex.Message);
         }
     }
 
