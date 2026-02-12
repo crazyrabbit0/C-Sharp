@@ -12,6 +12,7 @@ public class TrayRunner : Form
     private ContextMenuStrip trayMenu;
     private ToolStripMenuItem mgmtItem;
     private ToolStripMenuItem openFolderItem;
+    private ToolStripMenuItem versionItem;
     private ToolStripMenuItem exitItem;
     private Process childProcess;
     private string targetExe;
@@ -114,10 +115,15 @@ public class TrayRunner : Form
         mgmtItem.ImageAlign = ContentAlignment.MiddleCenter;
         mgmtItem.Font = new Font(mgmtItem.Font, FontStyle.Bold);
         
-        openFolderItem = new ToolStripMenuItem("Open Folder", GetFolderIcon(), OnOpenFolder);
+        openFolderItem = new ToolStripMenuItem("Containing Folder", GetFolderIcon(), OnOpenFolder);
         openFolderItem.Padding = new Padding(12, 0, 12, 0);
         openFolderItem.TextAlign = ContentAlignment.MiddleLeft;
         openFolderItem.ImageAlign = ContentAlignment.MiddleCenter;
+
+        versionItem = new ToolStripMenuItem("v" + version, GetVersionIcon(), OnVersionClick);
+        versionItem.Padding = new Padding(12, 0, 12, 0);
+        versionItem.TextAlign = ContentAlignment.MiddleLeft;
+        versionItem.ImageAlign = ContentAlignment.MiddleCenter;
 
         exitItem = new ToolStripMenuItem("Exit", GetExitIcon(), OnExit);
         exitItem.Padding = new Padding(12, 0, 12, 0);
@@ -126,6 +132,7 @@ public class TrayRunner : Form
 
         trayMenu.Items.Add(mgmtItem);
         trayMenu.Items.Add(openFolderItem);
+        trayMenu.Items.Add(versionItem);
         trayMenu.Items.Add(new ToolStripSeparator());
         trayMenu.Items.Add(exitItem);
 
@@ -180,6 +187,46 @@ public class TrayRunner : Form
                 using (Pen pen = new Pen(Color.FromArgb(180, 130, 20), 1f))
                 {
                     g.DrawRectangle(pen, 1, 3, 13, 10);
+                }
+            }
+            return bmp;
+        } catch {
+            return null;
+        }
+    }
+
+    private Image GetVersionIcon()
+    {
+        try {
+            Bitmap bmp = new Bitmap(16, 16);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+
+                g.TranslateTransform(8, 8);
+                g.RotateTransform(-45);
+                g.TranslateTransform(-8, -8);
+                
+                Point[] shape = new Point[] {
+                    new Point(2, 4),
+                    new Point(10, 4),
+                    new Point(14, 8),
+                    new Point(10, 12),
+                    new Point(2, 12)
+                };
+                
+                using (SolidBrush brush = new SolidBrush(Color.FromArgb(255, 225, 120)))
+                {
+                    g.FillPolygon(brush, shape);
+                }
+                using (Pen pen = new Pen(Color.FromArgb(180, 150, 80), 1f))
+                {
+                    g.DrawPolygon(pen, shape);
+                }
+                
+                using (SolidBrush hole = new SolidBrush(Color.White))
+                {
+                    g.FillEllipse(hole, 3, 7, 2, 2);
                 }
             }
             return bmp;
@@ -304,6 +351,11 @@ public class TrayRunner : Form
         {
             mgmtItem.Text = "Management Center";
         }
+
+        if (versionItem != null)
+        {
+            versionItem.Text = "v" + version;
+        }
     }
 
     private void OnChildProcessExited(object sender, EventArgs e)
@@ -335,6 +387,15 @@ public class TrayRunner : Form
             }
         } catch (Exception ex) {
             MessageBox.Show("Failed to open folder: " + ex.Message);
+        }
+    }
+
+    private void OnVersionClick(object sender, EventArgs e)
+    {
+        try {
+            Process.Start("https://github.com/router-for-me/CLIProxyAPI/releases");
+        } catch (Exception ex) {
+            MessageBox.Show("Failed to open URL: " + ex.Message);
         }
     }
 
