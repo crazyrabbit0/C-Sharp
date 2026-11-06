@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile every program with the .NET Framework compiler
+        shell: powershell
+        run: |
+          $csc = "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
+          New-Item -ItemType Directory -Force out | Out-Null
+          $failed = 0
+          Get-ChildItem -Filter *.cs | ForEach-Object {
+            $icon = [IO.Path]::ChangeExtension($_.FullName, '.ico')
+            $iconArg = if (Test-Path $icon) { "/win32icon:$icon" } else { '' }
+            & $csc /nologo /warnaserror /target:winexe "/out:out\$($_.BaseName).exe" $iconArg $_.FullName
+            if ($LASTEXITCODE) { $failed++ }
+          }
+          if ($failed) { exit 1 }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: programs
+          path: out/*.exe
