@@ -158,3 +158,4 @@ If the backend output format changes:
 - [ ] No new compiler warnings.
 - [ ] Allman style braces used for new code.
 - [ ] `try-catch` blocks present around external resource access (Files, Processes).
+- [ ] `CONTRIBUTING.md` and `.github/pull_request_template.md` still match these rules.
