@@ -153,7 +153,8 @@ If the backend output format changes:
 ---
 
 ## 6. Checklist Before Committing
-- [ ] Code compiles without errors using `csc.exe` or `compile.bat`.
+- [ ] Code compiles without errors using `csc.exe` or `compile.bat`. CI (`.github/workflows/build.yml`) compiles every `.cs` with `/warnaserror` on `windows-latest` and uploads the `.exe` as an artifact.
+- [ ] Rebuild and commit `cli-proxy-api-tray.exe` when the source changes; the README links to the committed binary.
 - [ ] No new compiler warnings.
 - [ ] Allman style braces used for new code.
 - [ ] `try-catch` blocks present around external resource access (Files, Processes).

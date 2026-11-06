@@ -1,0 +1,27 @@
+name: Bug report
+description: A program does not work as expected
+labels: [bug]
+assignees: [crazyrabbit0]
+body:
+  - type: dropdown
+    id: script
+    attributes:
+      label: Program
+      options:
+        - 'cli-proxy-api-tray.cs'
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Windows version and .NET Framework version
+      placeholder: Windows 11 24H2, .NET Framework 4.8
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happens, and what did you expect?
+      description: Include the steps to reproduce and any error message.
+    validations:
+      required: true
